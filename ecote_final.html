@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>ETE Intraoperatoria</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;font-size:14px;background:#f2f2f7;color:#1c1c1e}
+.wrap{max-width:440px;margin:0 auto;padding:10px 10px 40px}
+h1{font-size:17px;font-weight:700;text-align:center;padding:10px 0 4px}
+.sub{font-size:12px;color:#666;text-align:center;margin-bottom:12px}
+.tabs{display:flex;background:#fff;border-radius:10px;padding:3px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.12);gap:2px}
+.tabs button{flex:1;padding:8px 2px;font-size:11px;font-weight:600;text-align:center;cursor:pointer;color:#555;border-radius:8px;border:none;background:transparent;font-family:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.tabs button.on{background:#007AFF;color:#fff}
+.pg{display:none}
+.pg.on{display:block}
+.sec{background:#fff;border-radius:12px;margin-bottom:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.sh{padding:11px 13px;display:flex;justify-content:space-between;align-items:center;background:#f7f7f7;border-bottom:.5px solid #e5e5e5;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.sh h3{font-size:13px;font-weight:600;color:#1c1c1e}
+.sh .arr{font-size:11px;color:#999;display:inline-block;transition:transform .2s}
+.sh.closed .arr{transform:rotate(-90deg)}
+.sb{padding:11px 13px}
+.sb.hide{display:none}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px}
+.row1{margin-bottom:7px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:7px}
+.fi{display:flex;flex-direction:column;gap:3px}
+.fi label{font-size:11px;color:#555;font-weight:500}
+.fi input,.fi select,.fi textarea{font-size:13px;padding:7px 9px;border:1px solid #ddd;border-radius:8px;background:#fff;color:#1c1c1e;width:100%;-webkit-appearance:none;font-family:inherit}
+.fi input:focus,.fi select:focus{outline:none;border-color:#007AFF}
+.fi textarea{resize:vertical;min-height:44px}
+.calc{background:#e8f5e9 !important;border-color:#a5d6a7 !important;color:#2e7d32 !important;font-weight:600}
+.calcb{background:#e3f2fd !important;border-color:#90caf9 !important;color:#1565c0 !important;font-weight:600}
+.sgl{font-size:11px;font-weight:600;color:#555;margin:8px 0 3px;text-transform:uppercase;letter-spacing:.05em}
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:6px}
+.sg2{grid-template-columns:repeat(2,1fr)}
+.si label{font-size:9.5px;color:#555;text-align:center;display:block;margin-bottom:2px;line-height:1.2}
+.si select{font-size:11px;padding:4px 2px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#1c1c1e;width:100%;text-align:center;-webkit-appearance:none;font-family:inherit}
+.si select.an{background:#fff8e1;border-color:#ffc107}
+.ci{margin-bottom:7px}
+.ci label{font-size:11px;font-weight:500;color:#555;display:block;margin-bottom:3px}
+.ci textarea{width:100%;padding:7px 9px;border:1px solid #ddd;border-radius:8px;font-size:13px;color:#1c1c1e;font-family:inherit;resize:vertical;min-height:38px}
+.div{height:.5px;background:#e5e5e5;margin:7px 0}
+.note{font-size:10.5px;color:#888;margin-top:4px;line-height:1.5}
+.btn-blue{width:100%;padding:13px;font-size:15px;font-weight:700;background:#007AFF;color:#fff;border:none;border-radius:12px;cursor:pointer;margin-bottom:8px;font-family:inherit;-webkit-tap-highlight-color:transparent}
+.btn-grey{width:100%;padding:11px;font-size:14px;font-weight:600;background:#e5e5ea;color:#1c1c1e;border:none;border-radius:12px;cursor:pointer;margin-bottom:6px;font-family:inherit;-webkit-tap-highlight-color:transparent;display:none}
+.btn-green{width:100%;padding:11px;font-size:14px;font-weight:600;background:#34C759;color:#fff;border:none;border-radius:12px;cursor:pointer;margin-bottom:6px;font-family:inherit;-webkit-tap-highlight-color:transparent;display:none}
+#rout{background:#f8f8f8;border:1px solid #ddd;border-radius:10px;padding:13px;font-size:11.5px;line-height:1.75;white-space:pre-wrap;color:#1c1c1e;display:none;margin-bottom:8px;font-family:ui-monospace,Menlo,monospace}
+</style>
+</head>
+<body>
+<script>
+function goPage(n) {
+  var i;
+  for (i = 0; i < 4; i++) {
+    document.getElementById('pg' + i).className = (i === n) ? 'pg on' : 'pg';
+    document.getElementById('tb' + i).className = (i === n) ? 'on' : '';
+  }
+  window.scrollTo(0, 0);
+}
+function tog(hdr) {
+  var next = hdr.nextElementSibling;
+  if (!next) return;
+  var hidden = (next.className === 'sb hide');
+  next.className = hidden ? 'sb' : 'sb hide';
+  hdr.className  = hidden ? 'sh' : 'sh closed';
+}
+</script>
+<div class="wrap">
+<h1>ETE Intraoperatoria</h1>
+<p class="sub">Ecocardiograf&#237;a transesof&#225;gica &middot; Reporte cl&#237;nico</p>
+
+<div class="tabs">
+  <button id="tb0" class="on"  onclick="goPage(0)" ontouchend="goPage(0);event.preventDefault()">Paciente</button>
+  <button id="tb1"             onclick="goPage(1)" ontouchend="goPage(1);event.preventDefault()">Cavidades</button>
+  <button id="tb2"             onclick="goPage(2)" ontouchend="goPage(2);event.preventDefault()">V&#225;lvulas</button>
+  <button id="tb3"             onclick="goPage(3)" ontouchend="goPage(3);event.preventDefault()">Conclusi&#243;n</button>
+</div>
+
+<!-- ===== PAGE 0 ===== -->
+<div id="pg0" class="pg on">
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Identificaci&#243;n</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row1"><div class="fi"><label>Nombre</label><input id="nombre" type="text" placeholder="Apellidos, Nombre"></div></div>
+    <div class="row">
+      <div class="fi"><label>Historia cl&#237;nica</label><input id="hc" type="text"></div>
+      <div class="fi"><label>Sexo</label><select id="sexo"><option value="">-</option><option value="M">Masculino</option><option value="F">Femenino</option></select></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Edad (a&#241;os)</label><input id="edad" type="number" min="0" max="120" placeholder=""></div></div>
+    <div class="row3">
+      <div class="fi"><label>Peso (kg)</label><input id="peso" type="number" step="0.1" oninput="calcSC()" onchange="calcSC()"></div>
+      <div class="fi"><label>Talla (cm)</label><input id="talla" type="number" step="0.1" oninput="calcSC()" onchange="calcSC()"></div>
+      <div class="fi"><label>SC (m&#178;)</label><input id="sc" class="calc" readonly placeholder="auto"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>FC (lpm)</label><input id="fc" type="number" oninput="calcGC()" onchange="calcGC()"></div>
+      <div class="fi"><label>PA (mmHg)</label><input id="pa" type="text" placeholder="120/80"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Ritmo</label><select id="ritmo"><option value="">-</option><option>Sinusal</option><option>FA</option><option>Flutter auricular</option><option>MP dependiente</option><option>Otro</option></select></div>
+      <div class="fi"><label>Calidad registro</label><select id="calidad"><option value="">-</option><option>Buena</option><option>Regular</option><option>Mala</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Fecha examen</label><input id="fexamen" type="date"></div>
+      <div class="fi"><label>Inserci&#243;n sonda</label><select id="insercion"><option>Atraumatica</option><option>Con dificultad</option></select></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Diagn&#243;stico preoperatorio</label><textarea id="dxpre" rows="2"></textarea></div></div>
+  </div>
+</div>
+</div>
+
+<!-- ===== PAGE 1 ===== -->
+<div id="pg1" class="pg">
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Aur&#237;cula derecha</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Longitud (mm)</label><input id="ad_long" type="number" step="0.1"></div>
+      <div class="fi"><label>Dilataci&#243;n (0-III)</label><select id="ad_dil"><option value="">-</option><option value="0">0-Normal</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Contraste espont&#225;neo</label><select id="ad_ce"><option value="">-</option><option>No</option><option>S&#237;</option></select></div>
+      <div class="fi"><label>Trombo</label><select id="ad_trombo"><option value="">-</option><option>No</option><option>S&#237;</option></select></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Aur&#237;cula izquierda</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Longitud (mm)</label><input id="ai_long" type="number" step="0.1"></div>
+      <div class="fi"><label>Dilataci&#243;n (0-III)</label><select id="ai_dil"><option value="">-</option><option value="0">0-Normal</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Contraste espont&#225;neo</label><select id="ai_ce"><option value="">-</option><option>No</option><option>S&#237;</option></select></div>
+      <div class="fi"><label>Vel. orejuela (m/s)</label><input id="ai_orej" type="number" step="0.01"></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Trombo orejuela</label><select id="ai_trombo"><option value="">-</option><option>No</option><option>S&#237;</option></select></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Septo interauricular</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row1"><div class="fi"><label>Septo interauricular</label><select id="sia"><option value="">-</option><option>&#205;ntegro</option><option>CIA ostium secundum</option><option>CIA ostium primum</option><option>FOP</option><option>Aneurisma del septo</option><option>Patch CIA</option></select></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Derrame peric&#225;rdico</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row1"><div class="fi"><label>Derrame peric&#225;rdico</label><select id="dpe"><option value="">-</option><option value="no">No</option><option value="leve">S&#237; - leve</option><option value="mod">S&#237; - moderado</option><option value="sev">S&#237; - severo</option><option value="hdm">S&#237; - compromiso hemodin&#225;mico</option></select></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Ventr&#237;culo derecho</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Di&#225;m. basal (mm) VN&#8804;41</label><input id="vd_bas" type="number" step="0.1"></div>
+      <div class="fi"><label>Di&#225;m. medio (mm) VN&#8804;35</label><input id="vd_med" type="number" step="0.1"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Eje longitudinal (mm)</label><input id="vd_long" type="number" step="0.1"></div>
+      <div class="fi"><label>Hipertrofia pared</label><select id="vd_hta"><option value="">-</option><option value="no">No (&lt;5mm)</option><option value="si">S&#237; (&#8805;5mm)</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>TAPSE (mm) VN&#8805;17</label><input id="vd_tapse" type="number" step="0.1"></div>
+      <div class="fi"><label>TDI s&#8242; lat. (cm/s) VN&#8805;9.5</label><input id="vd_tdi" type="number" step="0.1"></div>
+    </div>
+    <div class="row1"><div class="fi"><label>TSVD (mm)</label><input id="vd_tsvd" type="number" step="0.1"></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Ventr&#237;culo izquierdo &mdash; medidas</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row1"><div class="fi"><label>SIV diast. (mm) VN 6-10</label><input id="siv" type="number" step="0.1"></div></div>
+    <div class="row">
+      <div class="fi"><label>Pared post. diast. (mm)</label><input id="pp" type="number" step="0.1"></div>
+      <div class="fi"><label>Di&#225;m. diast&#243;lico (mm)</label><input id="dd" type="number" step="0.1" oninput="calcFAT()" onchange="calcFAT()"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Di&#225;m. sist&#243;lico (mm)</label><input id="ds" type="number" step="0.1" oninput="calcFAT()" onchange="calcFAT()"></div>
+      <div class="fi"><label>FA (%)</label><input id="fa_vi" class="calc" readonly></div>
+    </div>
+    <div class="row1"><div class="fi"><label>FE Teichholz (%) &mdash; solo orientativo</label><input id="fe_teich" class="calc" readonly></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Funci&#243;n sist&#243;lica VI &mdash; Simpson biplano</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>VFD 4C (ml)</label><input id="vfd4" type="number" step="0.1" oninput="calcBip()" onchange="calcBip()"></div>
+      <div class="fi"><label>VFS 4C (ml)</label><input id="vfs4" type="number" step="0.1" oninput="calcBip()" onchange="calcBip()"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>VFD 2C (ml)</label><input id="vfd2" type="number" step="0.1" oninput="calcBip()" onchange="calcBip()"></div>
+      <div class="fi"><label>VFS 2C (ml)</label><input id="vfs2" type="number" step="0.1" oninput="calcBip()" onchange="calcBip()"></div>
+    </div>
+    <div class="row3">
+      <div class="fi"><label>FE 4C (%)</label><input id="fe4" class="calc" readonly></div>
+      <div class="fi"><label>FE 2C (%)</label><input id="fe2" class="calc" readonly></div>
+      <div class="fi"><label>FE biplano (%)</label><input id="fe_bip" class="calc" readonly></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Aorta</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>TSVI (mm)</label><input id="ao_tsvi" type="number" step="0.1" oninput="syncTSVI();calcGC();calcAVA()" onchange="syncTSVI();calcGC();calcAVA()" placeholder=""></div>
+      <div class="fi"><label>Anillo a&#243;rtico (mm)</label><input id="ao_anillo" type="number" step="0.1" placeholder="H:26 M:23"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Senos Valsalva (mm)</label><input id="ao_senos" type="number" step="0.1" placeholder="H:34 M:30"></div>
+      <div class="fi"><label>Uni&#243;n sinotubular (mm)</label><input id="ao_ust" type="number" step="0.1"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Ao ascendente (mm)</label><input id="ao_asc" type="number" step="0.1"></div>
+      <div class="fi"><label>Ao descendente (mm)</label><input id="ao_desc" type="number" step="0.1"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Ateroma (Katz)</label><select id="ao_katz"><option value="">-</option><option>0</option><option>I</option><option>II</option><option>III</option><option>IV</option><option>V</option></select></div>
+      <div class="fi"><label>Disecci&#243;n</label><select id="ao_dis"><option value="">-</option><option>No</option><option>S&#237; - tipo A</option><option>S&#237; - tipo B</option></select></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Gasto card&#237;aco (Doppler TSVI)</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>ITV TSVI (cm)</label><input id="tsvi_itv_gc" type="number" step="0.1" oninput="calcGC();syncITV();calcAVA()" onchange="calcGC();syncITV();calcAVA()"></div>
+      <div class="fi"><label>GC (l/min)</label><input id="gc_auto" class="calcb" readonly placeholder="auto"></div>
+    </div>
+    <div class="row1"><div class="fi"><label>IC (l/min/m&#178;)</label><input id="ic_auto" class="calcb" readonly placeholder="auto con SC"></div></div>
+    <p class="note">GC = &pi; &times; (TSVI/2)&#178; &times; ITV &times; FC / 1000</p>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Motilidad segmentaria VI (16 seg. ASE 2015)</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <p class="sgl">Basal (6 segmentos)</p>
+    <div class="sg">
+      <div class="si"><label>1 AntSep-B</label><select class="seg" id="s1" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>2 Ant-B</label><select class="seg" id="s2" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>3 AntLat-B</label><select class="seg" id="s3" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>4 InfLat-B</label><select class="seg" id="s4" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>5 InfSep-B</label><select class="seg" id="s5" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>6 Inf-B</label><select class="seg" id="s6" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+    </div>
+    <p class="sgl">Medio (6 segmentos)</p>
+    <div class="sg">
+      <div class="si"><label>7 AntSep-M</label><select class="seg" id="s7" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>8 Ant-M</label><select class="seg" id="s8" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>9 AntLat-M</label><select class="seg" id="s9" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>10 InfLat-M</label><select class="seg" id="s10" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>11 InfSep-M</label><select class="seg" id="s11" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>12 Inf-M</label><select class="seg" id="s12" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+    </div>
+    <p class="sgl">Apical (4 segmentos)</p>
+    <div class="sg sg2">
+      <div class="si"><label>13 Ant-A</label><select class="seg" id="s13" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>14 Lat-A</label><select class="seg" id="s14" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>15 Inf-A</label><select class="seg" id="s15" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+      <div class="si"><label>16 Sep-A</label><select class="seg" id="s16" onchange="calcPRS();markSeg(this)"><option value="1">Normal</option><option value="2">Hipo</option><option value="3">Acin</option><option value="4">Discin</option></select></div>
+    </div>
+    <div class="div"></div>
+    <div class="row">
+      <div class="fi"><label>Puntaje regional</label><input id="prs" class="calc" readonly></div>
+      <div class="fi"><label>WMSI</label><input id="wmsi" class="calc" readonly></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Comentarios motilidad</label><textarea id="comt_mot" rows="2"></textarea></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Comentarios cavidades</h3><span class="arr">&#9660;</span></div>
+  <div class="sb"><div class="row1"><div class="fi"><textarea id="comt_cav" rows="3"></textarea></div></div></div>
+</div>
+
+</div><!-- /pg1 -->
+
+<!-- ===== PAGE 2 ===== -->
+<div id="pg2" class="pg">
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>V&#225;lvula mitral</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Morfolog&#237;a velos</label><input id="vm_morf" type="text" placeholder="ej. normales"></div>
+      <div class="fi"><label>Movimiento afectado</label><input id="vm_mov" type="text" placeholder="A2, P2..."></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Estenosis (0-III)</label><select id="vm_est"><option value="">-</option><option value="0">0-Sin estenosis</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+      <div class="fi"><label>Regurgitaci&#243;n (0-IV)</label><select id="vm_reg"><option value="">-</option><option value="0">0-Sin regurgitaci&#243;n</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Mod-severa</option><option value="4">IV-Severa</option></select></div>
+    </div>
+    <div class="row3">
+      <div class="fi"><label>A1-P1</label><select id="vm_a1p1"><option value="">-</option><option>Normal</option><option>Prolapso</option><option>Restricci&#243;n</option><option>Flail</option></select></div>
+      <div class="fi"><label>A2-P2</label><select id="vm_a2p2"><option value="">-</option><option>Normal</option><option>Prolapso</option><option>Restricci&#243;n</option><option>Flail</option></select></div>
+      <div class="fi"><label>A3-P3</label><select id="vm_a3p3"><option value="">-</option><option>Normal</option><option>Prolapso</option><option>Restricci&#243;n</option><option>Flail</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Onda E (m/s)</label><input id="vm_e" type="number" step="0.01" oninput="calcEA();calcEe()" onchange="calcEA();calcEe()"></div>
+      <div class="fi"><label>Onda A (m/s)</label><input id="vm_a" type="number" step="0.01" oninput="calcEA()" onchange="calcEA()"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Relaci&#243;n E/A</label><input id="vm_ea" class="calc" readonly></div>
+      <div class="fi"><label>T desaceleraci&#243;n (ms)</label><input id="vm_tdes" type="number"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>G medio (mmHg)</label><input id="vm_gmed" type="number" step="0.1"></div>
+      <div class="fi"><label>THP (ms)</label><input id="vm_thp" type="number" oninput="calcTHP()" onchange="calcTHP()"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>&#193;rea THP (cm&#178;)</label><input id="vm_area" class="calc" readonly></div>
+      <div class="fi"><label>Vena contracta (mm)</label><input id="vm_vc" type="number" step="0.1"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>V&#225;lvula a&#243;rtica</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Morfolog&#237;a velos</label><input id="va_morf" type="text" placeholder="ej. normales"></div>
+      <div class="fi"><label>Movimiento afectado</label><input id="va_mov" type="text"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Estenosis (0-III)</label><select id="va_est"><option value="">-</option><option value="0">0-Sin estenosis</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+      <div class="fi"><label>Regurgitaci&#243;n (0-IV)</label><select id="va_reg"><option value="">-</option><option value="0">0-Sin regurgitaci&#243;n</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Mod-severa</option><option value="4">IV-Severa</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Vmax VA (m/s)</label><input id="va_vmax" type="number" step="0.01" oninput="calcGmaxVA()" onchange="calcGmaxVA()"></div>
+      <div class="fi"><label>Gmax VA (mmHg)</label><input id="va_gmax" class="calc" readonly></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Gmed VA (mmHg)</label><input id="va_gmed" type="number" step="0.1"></div>
+      <div class="fi"><label>ITV VA</label><input id="va_itv" type="number" step="0.1" oninput="calcAVA()" onchange="calcAVA()"></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Vena contracta (mm)</label><input id="va_vc" type="number" step="0.1"></div></div>
+    <div class="row1"><div class="fi"><label>AVA por continuidad (cm&#178;)</label><input id="va_ava_cont" class="calc" readonly placeholder="auto TSVI x ITV"></div></div>
+    <div class="row">
+      <div class="fi"><label>TSVI Vmax (m/s)</label><input id="tsvi_vmax" type="number" step="0.01"></div>
+      <div class="fi"><label>TSVI ITV (cm)</label><input id="tsvi_itv" type="number" step="0.1" oninput="syncITV();calcAVA()" onchange="syncITV();calcAVA()"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>TSVI Gmax (mmHg)</label><input id="tsvi_gmax" type="number" step="0.1"></div>
+      <div class="fi"><label>TSVI Gmed (mmHg)</label><input id="tsvi_gmed" type="number" step="0.1"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>THP</label><input id="va_thp" type="number"></div>
+      <div class="fi"><label>Jet/TSVI (%)</label><input id="va_jet" type="number" step="0.1"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>V&#225;lvula tricusp&#237;de</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row1"><div class="fi"><label>Morfolog&#237;a velos</label><input id="vt_morf" type="text"></div></div>
+    <div class="row">
+      <div class="fi"><label>Estenosis (0-III)</label><select id="vt_est"><option value="">-</option><option value="0">0-Sin estenosis</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+      <div class="fi"><label>Regurgitaci&#243;n (0-IV)</label><select id="vt_reg"><option value="">-</option><option value="0">0-Sin regurgitaci&#243;n</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Mod-severa</option><option value="4">IV-Severa</option></select></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>Vmax IT (m/s)</label><input id="vt_vmax" type="number" step="0.01" oninput="calcGmaxIT()" onchange="calcGmaxIT()"></div>
+      <div class="fi"><label>Gmax IT (mmHg)</label><input id="vt_gmax" class="calc" readonly></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>PVC (mmHg)</label><input id="vt_pvc" type="number" step="1" min="0" oninput="calcPAPs()" onchange="calcPAPs()"></div>
+      <div class="fi"><label>PAPs (mmHg)</label><input id="vt_pap" class="calcb" readonly placeholder="auto"></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>V&#225;lvula pulmonar</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Estenosis (0-III)</label><select id="vp_est"><option value="">-</option><option value="0">0-Sin estenosis</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+      <div class="fi"><label>Regurgitaci&#243;n (0-IV)</label><select id="vp_reg"><option value="">-</option><option value="0">0-Sin regurgitaci&#243;n</option><option value="1">I-Leve</option><option value="2">II-Moderada</option><option value="3">III-Severa</option></select></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Vmax (m/s)</label><input id="vp_vmax" type="number" step="0.01"></div></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Doppler tisular / funci&#243;n diast&#243;lica</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>e&#8242; promedio (cm/s) <span style="font-weight:400;color:#888">(VN &#8805;9)</span></label><input id="dt_eprime" type="number" step="0.1" oninput="calcEe()" onchange="calcEe()"></div>
+      <div class="fi"><label>E/e&#8242; ratio</label><input id="dt_ee" class="calc" readonly></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>PCP estimada (mmHg)</label><input id="dt_pcp" class="calcb" readonly placeholder="auto E/e'"></div>
+      <div class="fi"><label>s&#8242; promedio (cm/s) <span style="font-weight:400;color:#888">(VN &#8805;9.5)</span></label><input id="dt_sprime" type="number" step="0.1"></div>
+    </div>
+    <div class="row1"><div class="fi"><label>&#205;ndice S/D vena pulmonar</label><input id="dt_sd" type="number" step="0.01"></div></div>
+  </div>
+</div>
+
+</div><!-- /pg2 -->
+
+<!-- ===== PAGE 3 ===== -->
+<div id="pg3" class="pg">
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Conclusiones preintervenci&#243;n</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="ci"><label>1) Ventr&#237;culo izquierdo</label><textarea id="c1" rows="3" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>2) Funci&#243;n diast&#243;lica</label><textarea id="c2" rows="2" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>3) Ventr&#237;culo derecho</label><textarea id="c3" rows="2" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>4) V&#225;lvula mitral</label><textarea id="c4" rows="2" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>5) V&#225;lvula a&#243;rtica</label><textarea id="c5" rows="2" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>6) V&#225;lvula pulmonar</label><textarea id="c6" rows="2" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>7) V&#225;lvula tricusp&#237;de</label><textarea id="c7" rows="2" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>8) Pericardio</label><textarea id="c8" rows="1" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>9) Septo interauricular</label><textarea id="c9" rows="1" oninput="markEdit(this)"></textarea></div>
+    <div class="ci"><label>10) Aorta</label><textarea id="c10" rows="2" oninput="markEdit(this)"></textarea></div>
+  </div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Intervenci&#243;n quir&#250;rgica</h3><span class="arr">&#9660;</span></div>
+  <div class="sb"><div class="row1"><div class="fi"><textarea id="interv" rows="3" placeholder="Describa la intervenci&#243;n realizada"></textarea></div></div></div>
+</div>
+
+<div class="sec">
+  <div class="sh" onclick="tog(this)" ontouchend="tog(this);event.preventDefault()"><h3>Estudio postintervenci&#243;n</h3><span class="arr">&#9660;</span></div>
+  <div class="sb">
+    <div class="row">
+      <div class="fi"><label>Funci&#243;n global VI</label><input id="post_vi" type="text"></div>
+      <div class="fi"><label>Funci&#243;n global VD</label><input id="post_vd" type="text"></div>
+    </div>
+    <div class="row">
+      <div class="fi"><label>V&#225;lvula nativa</label><input id="post_nat" type="text"></div>
+      <div class="fi"><label>V&#225;lvula prot&#233;sica</label><input id="post_prot" type="text"></div>
+    </div>
+    <div class="row1"><div class="fi"><label>Fuga periprот&#233;sica</label><select id="post_fuga"><option value="">-</option><option>No</option><option>S&#237; - trivial</option><option>S&#237; - leve</option><option>S&#237; - moderada</option><option>S&#237; - severa</option></select></div></div>
+    <div class="ci"><label>Conclusi&#243;n postintervenci&#243;n</label><textarea id="concl_post" rows="3"></textarea></div>
+    <div class="ci"><label>Comentarios</label><textarea id="comt_post" rows="2"></textarea></div>
+  </div>
+</div>
+
+<button class="btn-blue" onclick="genPre()">Reporte preintervenci&#243;n</button>
+<button class="btn-blue" style="background:#5856D6" onclick="genFull()">Reporte completo (pre + post)</button>
+<div id="rout"></div>
+<button class="btn-grey" id="bcopy" onclick="copyR()">Copiar texto</button>
+<button class="btn-green" id="bpdf" onclick="expPDF()">Exportar PDF</button>
+
+</div><!-- /pg3 -->
+</div><!-- /wrap -->
+
+<script src="jspdf.umd.min.js"></script>
+<script>
+/* ===== NAVIGATION ===== */
+function goPage(n) {
+  var i;
+  for (i = 0; i < 4; i++) {
+    document.getElementById('pg' + i).className = (i === n) ? 'pg on' : 'pg';
+    document.getElementById('tb' + i).className = (i === n) ? 'on' : '';
+  }
+  window.scrollTo(0, 0);
+}
+
+function tog(hdr) {
+  var next = hdr.nextElementSibling;
+  if (!next) return;
+  var hidden = (next.className === 'sb hide');
+  next.className = hidden ? 'sb' : 'sb hide';
+  hdr.className  = hidden ? 'sh' : 'sh closed';
+}
+
+function markSeg(el) {
+  el.className = (el.value !== '1') ? 'an' : '';
+}
+
+function markEdit(el) {
+  el.dataset.edited = el.value.trim() ? '1' : '';
+}
+
+/* ===== HELPERS ===== */
+function g(id) { return document.getElementById(id); }
+function v(id) { var e = g(id); return e ? e.value : ''; }
+function vn(id) { var x = parseFloat(v(id)); return isNaN(x) ? null : x; }
+function nv(id, u) { var x = v(id); return x ? (x + (u || '')) : '-'; }
+function sv(id) { return v(id) || '-'; }
+function set(id, val) { var e = g(id); if (e) e.value = val; }
+
+/* ===== CALCULATIONS ===== */
+function calcEdad() {
+  var d = v('fnac');
+  if (!d) return;
+  var nac = new Date(d), hoy = new Date();
+  var a = hoy.getFullYear() - nac.getFullYear();
+  var m = hoy.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && hoy.getDate() < nac.getDate())) a--;
+  if (a >= 0 && a <= 120) set('edad', a);
+}
+
+function calcSC() {
+  var p = vn('peso'), t = vn('talla');
+  if (p && t && p > 0 && t > 0) set('sc', Math.sqrt(p * t / 3600).toFixed(2));
+  calcBip();
+  calcGC();
+}
+
+function calcFAT() {
+  var dd = vn('dd'), ds = vn('ds');
+  if (dd && ds && dd > 0) {
+    set('fa_vi',   ((dd - ds) / dd * 100).toFixed(1) + '%');
+    set('fe_teich', ((1 - Math.pow(ds / dd, 3)) * 100).toFixed(1) + '%');
+  }
+}
+
+function calcBip() {
+  var a = vn('vfd4'), b = vn('vfs4'), c = vn('vfd2'), d = vn('vfs2'), sc = vn('sc');
+  if (a && b && a > 0) set('fe4', ((a - b) / a * 100).toFixed(1) + '%');
+  if (c && d && c > 0) set('fe2', ((c - d) / c * 100).toFixed(1) + '%');
+  if (a && b && c && d) {
+    var vm = (a + c) / 2, vs = (b + d) / 2;
+    set('fe_bip', ((vm - vs) / vm * 100).toFixed(1) + '%');
+    // VFD/SC VFS/SC removed from display
+  }
+}
+
+function calcPRS() {
+  var s = 0, els = document.querySelectorAll('.seg'), i;
+  for (i = 0; i < els.length; i++) s += (parseInt(els[i].value) || 1);
+  set('prs',  s);
+  set('wmsi', (s / 16).toFixed(2));
+}
+
+function calcEA()     { var e = vn('vm_e'), a = vn('vm_a'); if (e && a && a > 0) set('vm_ea', (e / a).toFixed(2)); }
+function calcTHP()    { var t = vn('vm_thp'); if (t && t > 0) set('vm_area', (220 / t).toFixed(2)); }
+function calcEe() {
+  var ep = vn('dt_eprime'), e = vn('vm_e');
+  if (ep && e && ep > 0) {
+    var ee = e * 100 / ep;
+    set('dt_ee', ee.toFixed(1));
+    // PCP estimada: formula Nagueh et al. (E/e-prima x 1.24 + 1.9)
+    var pcp = ee * 1.24 + 1.9;
+    set('dt_pcp', pcp.toFixed(1));
+  }
+}
+function calcGmaxVA() { var x = vn('va_vmax'); if (x) set('va_gmax', (4 * x * x).toFixed(1)); calcAVA(); }
+function calcAVA() {
+  var d = vn('ao_tsvi') || vn('tsvi');
+  var itv_tsvi = vn('tsvi_itv') || vn('tsvi_itv_gc');
+  var itv_va = vn('va_itv');
+  if (d && itv_tsvi && itv_va && d > 0 && itv_tsvi > 0 && itv_va > 0) {
+    var r = (d / 2) / 10;
+    set('va_ava_cont', (Math.PI * r * r * itv_tsvi / itv_va).toFixed(2));
+  }
+}
+function calcGmaxIT() {
+  var x = vn('vt_vmax');
+  if (x) { set('vt_gmax', (4 * x * x).toFixed(1)); calcPAPs(); }
+}
+function calcPAPs() {
+  var vmax = vn('vt_vmax');
+  var pvc = vn('vt_pvc');
+  if (vmax && pvc !== null) {
+    var gmax = 4 * vmax * vmax;
+    set('vt_gmax', gmax.toFixed(1));
+    set('vt_pap', (gmax + pvc).toFixed(0));
+  }
+}
+
+function syncITV() {
+  set('tsvi_itv', v('tsvi_itv_gc'));
+  calcGC();
+}
+
+function calcGC() {
+  // Use ao_tsvi if filled, else fall back to tsvi from VI medidas section
+  var d = vn('ao_tsvi') || vn('tsvi');
+  var it = vn('tsvi_itv_gc') || vn('tsvi_itv');
+  var fc = vn('fc'), sc = vn('sc');
+  if (d && it && fc && d > 0 && it > 0 && fc > 0) {
+    var r = (d / 2) / 10;
+    var gc = Math.PI * r * r * it * fc / 1000;
+    set('gc_auto', gc.toFixed(2));
+    if (sc && sc > 0) set('ic_auto', (gc / sc).toFixed(2));
+  } else {
+    set('gc_auto', '');
+    set('ic_auto', '');
+  }
+}
+function calcGC2() { calcGC(); }
+function syncTSVI() {
+  var v_ao = vn('ao_tsvi');
+  if (v_ao) set('tsvi', v_ao);
+}
+
+/* ===== SEGMENT NAMES ===== */
+var SN = ['','AntSep-Basal','Ant-Basal','AntLat-Basal','InfLat-Basal','InfSep-Basal','Inf-Basal',
+  'AntSep-Medio','Ant-Medio','AntLat-Medio','InfLat-Medio','InfSep-Medio','Inf-Medio',
+  'Ant-Apical','Lat-Apical','Inf-Apical','Sep-Apical'];
+var SL = ['','Normal','Hipocinesia','Acinesia','Discinesia'];
+
+/* ===== AUTO CONCLUSIONS ===== */
+function aset(id, txt) {
+  var e = g(id);
+  if (e && !e.dataset.edited && txt) e.value = txt;
+}
+
+function buildConc() {
+  var sex = v('sexo'), male = (sex === 'M'), female = (sex === 'F');
+  var sc = vn('sc');
+
+  /* C1 VI */
+  var a4 = vn('vfd4'), b4 = vn('vfs4'), a2 = vn('vfd2'), b2 = vn('vfs2');
+  var vfdm = (a4 && b4 && a2 && b2) ? (a4 + a2) / 2 : null;
+  var idx = (vfdm && sc) ? vfdm / sc : null;
+  var tamVI = '';
+  if (idx !== null && (male || female)) {
+    var lim = male ? [74,89,100] : [61,70,80];
+    tamVI = idx<=lim[0] ? 'no dilatado' : idx<=lim[1] ? 'levemente dilatado' : idx<=lim[2] ? 'moderadamente dilatado' : 'severamente dilatado';
+  }
+  var siv = vn('siv'), pp = vn('pp'), htaVI = '';
+  if (siv || pp) {
+    var mw = Math.max(siv||0, pp||0) / 10;
+    if (male || female) {
+      var lh = male ? [1.0,1.3,1.6] : [0.9,1.2,1.5];
+      htaVI = mw<=lh[0] ? 'sin hipertrofia' : mw<=lh[1] ? 'con hipertrofia leve' : mw<=lh[2] ? 'con hipertrofia moderada' : 'con hipertrofia severa';
+    }
+  }
+  var fb = parseFloat(v('fe_bip')) || null, feStr = '';
+  if (fb !== null) {
+    var lf = male ? 52 : (female ? 54 : 52);
+    feStr = fb>=lf ? 'FE conservada ('+fb.toFixed(0)+'% biplano)' : fb>=41 ? 'FE levemente reducida ('+fb.toFixed(0)+'%)' : fb>=30 ? 'FE moderadamente reducida ('+fb.toFixed(0)+'%)' : 'FE severamente reducida ('+fb.toFixed(0)+'%)';
+  }
+  var anS = [], i;
+  for (i = 1; i <= 16; i++) { var sv2 = v('s'+i); if (sv2 !== '1') anS.push(SN[i]+': '+SL[parseInt(sv2)]); }
+  var motStr = anS.length===0 ? 'Sin alt. segmentarias.' : 'Alt. segmentarias: '+anS.join(', ')+' (WMSI '+v('wmsi')+').';
+  var c1 = '';
+  if (tamVI || htaVI || feStr) {
+    var base = 'Ventriculo izquierdo';
+    if (tamVI && htaVI) base += ' '+tamVI+', '+htaVI;
+    else if (tamVI) base += ' '+tamVI;
+    else if (htaVI) base += ' '+htaVI;
+    c1 = base+'. '+(feStr ? feStr+'. ' : '')+motStr;
+  }
+  aset('c1', c1);
+
+  /* C2 diastolica - clasificacion Nagueh et al. 2016 */
+  var ep = vn('dt_eprime'), ee2 = vn('dt_ee'), pcp = vn('dt_pcp');
+  var vm_e_val = vn('vm_e'), vm_a_val = vn('vm_a'), vm_ea_val = vn('vm_ea'), vm_tdes_val = vn('vm_tdes');
+  var ai_dil_val = v('ai_dil');
+  var c2 = '';
+  if (ep || ee2 || vm_e_val) {
+    // Criterios Nagueh 2016:
+    // e-prima promedio: septal <7 o lateral <10 -> reducido (usamos e-prima <9 como referencia ETE)
+    var eprimeBaja = ep !== null && ep < 9;
+    // E/e-prima >14 = presiones elevadas
+    var ee2Alto = ee2 !== null && parseFloat(ee2) > 14;
+    // E/A ratio
+    var ea = vm_ea_val || (vm_e_val && vm_a_val && vm_a_val > 0 ? vm_e_val / vm_a_val : null);
+    var eaBajo = ea !== null && ea < 0.8;
+    var eaAlto = ea !== null && ea > 2.0;
+    // Tdesacel <160 ms -> patron restrictivo
+    var tdesRestrictivo = vm_tdes_val !== null && vm_tdes_val < 160;
+    // AI dilatada (grado 2+)
+    var aiDil = (ai_dil_val === '2' || ai_dil_val === '3');
+
+    if (!eprimeBaja && !ee2Alto && !eaBajo && !eaAlto) {
+      c2 = 'Funcion diastolica dentro de limites normales';
+      if (pcp) c2 += '. PCP estimada ' + pcp + ' mmHg';
+      c2 += '.';
+    } else if (eaBajo && eprimeBaja && !ee2Alto) {
+      // Patron de relajacion alterada sin presiones elevadas -> Grado I
+      c2 = 'Disfuncion diastolica grado I (relajacion alterada)';
+      if (pcp) c2 += '. PCP estimada ' + pcp + ' mmHg';
+      c2 += '.';
+    } else if ((eaAlto || tdesRestrictivo) && ee2Alto) {
+      // Patron restrictivo -> Grado III
+      c2 = 'Disfuncion diastolica grado III (patron restrictivo)';
+      if (pcp) c2 += '. PCP estimada ' + pcp + ' mmHg';
+      c2 += '.';
+    } else if (ee2Alto || (eprimeBaja && (aiDil || eaAlto))) {
+      // Pseudonormal o grado II
+      c2 = 'Disfuncion diastolica grado II (patron pseudonormal)';
+      if (pcp) c2 += '. PCP estimada ' + pcp + ' mmHg';
+      c2 += '.';
+    } else if (eprimeBaja) {
+      c2 = 'Disfuncion diastolica (patron de relajacion alterada)';
+      if (pcp) c2 += '. PCP estimada ' + pcp + ' mmHg';
+      c2 += '.';
+    } else {
+      // Datos insuficientes para clasificar
+      c2 = 'Evaluacion diastolica incompleta';
+      if (ee2Alto) c2 += '. Presiones de llenado elevadas (E/e-prima ' + parseFloat(ee2).toFixed(1) + ')';
+      if (pcp) c2 += '. PCP estimada ' + pcp + ' mmHg';
+      c2 += '.';
+    }
+  }
+  aset('c2', c2);
+
+  /* C3 VD */
+  var vb = vn('vd_bas'), ta = vn('vd_tapse'), td = vn('vd_tdi'), fa = vn('vd_fac');
+  var papV = vn('vt_pap');
+  var vdDil = false, vdFuncBaja = false;
+  var taAnorm = (ta !== null && ta < 17);
+  var tdAnorm = (td !== null && td < 9.5);
+  var faAnorm = (fa !== null && fa < 35);
+  if (vb !== null && vb > 41) vdDil = true;
+  if (taAnorm || tdAnorm) vdFuncBaja = true;
+  var c3p = [];
+  // Determinar descripcion integrada
+  var hayDatos = (vb !== null || ta !== null || td !== null || fa !== null);
+  if (hayDatos) {
+    if (!vdDil && !vdFuncBaja && !(faAnorm)) {
+      c3p.push('Ventriculo derecho de morfologia y funcion normal');
+    } else {
+      if (vdDil) {
+        if (vb <= 50) c3p.push('Ventriculo derecho levemente dilatado');
+        else c3p.push('Ventriculo derecho severamente dilatado');
+      } else {
+        c3p.push('Ventriculo derecho no dilatado');
+      }
+      if (vdFuncBaja) {
+        c3p.push('con disfuncion sistolica');
+      } else if (ta !== null || td !== null || fa !== null) {
+        c3p.push('con funcion sistolica conservada');
+      }
+    }
+  }
+  if (papV) c3p.push(papV<=35 ? 'sin hipertension pulmonar' : papV<=50 ? 'hipertension pulmonar leve' : papV<=70 ? 'hipertension pulmonar moderada' : 'hipertension pulmonar severa');
+  aset('c3', c3p.length ? c3p[0].charAt(0).toUpperCase() + c3p[0].slice(1) + (c3p.length > 1 ? ' ' + c3p.slice(1).join(', ') : '') + '.' : '');
+
+  function es(x) { return x==='0'?'sin estenosis':x==='1'?'estenosis leve':x==='2'?'estenosis moderada':x==='3'?'estenosis severa':''; }
+  function rg(x) { return x==='0'?'sin insuficiencia':x==='1'?'insuficiencia leve':x==='2'?'insuficiencia moderada':x==='3'?'insuficiencia moderada-severa':x==='4'?'insuficiencia severa':''; }
+
+  // Mecanismo de insuficiencia mitral por segmentos
+  function mec_vm(vr, morf, mov, a1, a2, a3) {
+    if (vr === '0' || vr === '') return '';
+    var segs = [];
+    if (a1 && a1 !== 'Normal' && a1 !== '') segs.push('A1-P1 ' + a1.toLowerCase());
+    if (a2 && a2 !== 'Normal' && a2 !== '') segs.push('A2-P2 ' + a2.toLowerCase());
+    if (a3 && a3 !== 'Normal' && a3 !== '') segs.push('A3-P3 ' + a3.toLowerCase());
+    if (segs.length) return ' por ' + segs.join(', ');
+    if (morf && morf !== '') return ' en valvula ' + morf.toLowerCase();
+    return '';
+  }
+
+  // C4: Valvula mitral
+  var ve=v('vm_est'), vr=v('vm_reg');
+  if (ve!==''||vr!=='') {
+    var p4=[];
+    var vmMorf = v('vm_morf') ? 'Valvula mitral ' + v('vm_morf') : 'Valvula mitral';
+    if (ve!=='') p4.push(es(ve));
+    if (vr!=='') p4.push(rg(vr) + mec_vm(vr, v('vm_morf'), v('vm_mov'), v('vm_a1p1'), v('vm_a2p2'), v('vm_a3p3')));
+    aset('c4', vmMorf + ', ' + p4.join(', ') + '.');
+  }
+
+  // C5: Valvula aortica
+  var ae=v('va_est'), ar=v('va_reg');
+  if (ae!==''||ar!=='') {
+    var p5=[];
+    var vaMorf = v('va_morf') ? 'Valvula aortica ' + v('va_morf') : 'Valvula aortica';
+    var vaMov = v('va_mov') ? ' (' + v('va_mov').toLowerCase() + ')' : '';
+    if (ae!=='') p5.push(es(ae));
+    if (ar!=='') p5.push(rg(ar) + vaMov);
+    var avaC = v('va_ava_cont'), avaP = v('va_area'), areaStr = '';
+    if (avaC) areaStr = ' (AVA por continuidad ' + avaC + ' cm2)';
+    else if (avaP) areaStr = ' (AVA planimetria ' + avaP + ' cm2)';
+    aset('c5', vaMorf + ', ' + p5.join(', ') + areaStr + '.');
+  }
+
+  // C6: Valvula pulmonar
+  var pe=v('vp_est'), pr=v('vp_reg');
+  if (pe!==''||pr!=='') {
+    var p6=[]; if(pe!=='')p6.push(es(pe)); if(pr!=='')p6.push(rg(pr));
+    aset('c6','Valvula pulmonar, '+p6.join(', ')+'.');
+  }
+
+  // C7: Valvula tricuspide
+  var te=v('vt_est'), tr=v('vt_reg');
+  if (te!==''||tr!=='') {
+    var p7=[];
+    var vtMorf = v('vt_morf') ? ' ' + v('vt_morf').toLowerCase() : '';
+    if(te!=='') p7.push(es(te));
+    if(tr!=='') p7.push(rg(tr));
+    aset('c7','Valvula tricuspide'+vtMorf+', '+p7.join(', ')+'.');
+  }
+
+  // C8: Pericardio
+  var dp=v('dpe');
+  var dpM={no:'Sin derrame pericardico.',leve:'Derrame pericardico leve.',mod:'Derrame pericardico moderado.',sev:'Derrame pericardico severo.',hdm:'Derrame pericardico con compromiso hemodinamico.'};
+  if (dpM[dp]) aset('c8', dpM[dp]);
+
+  // C9: Septo interauricular
+  var sia = v('sia');
+  if (sia && sia !== '') {
+    var c9 = '';
+    if (sia.indexOf('ntegro') >= 0) c9 = 'Septo interauricular integro.';
+    else if (sia.indexOf('secundum') >= 0) c9 = 'Comunicacion interauricular tipo ostium secundum.';
+    else if (sia.indexOf('primum') >= 0) c9 = 'Comunicacion interauricular tipo ostium primum.';
+    else if (sia.indexOf('FOP') >= 0) c9 = 'Foramen oval permeable.';
+    else if (sia.indexOf('neurisma') >= 0) c9 = 'Aneurisma del septo interauricular.';
+    else if (sia.indexOf('Patch') >= 0 || sia.indexOf('patch') >= 0) c9 = 'Septo interauricular con parche de cierre de CIA.';
+    else c9 = sia + '.';
+    aset('c9', c9);
+  }
+
+  // C10: Aorta - valores indexados a SC (Goldstein ASE 2015, Lang ASE/EACVI 2015)
+  // Limites normales indexados (Lang 2015 Tabla 14):
+  //   Senos Valsalva: H 1.7+/-0.2 cm/m2 (lim sup 2.1), M 1.8+/-0.2 cm/m2 (lim sup 2.2)
+  //   Ao ascendente: lim sup 2.1 cm/m2 (Goldstein 2015)
+  //   Ao descendente: lim sup 1.8 cm/m2
+  var aoSenos = vn('ao_senos'), aoUST = vn('ao_ust');
+  var aoAsc = vn('ao_asc'), aoDesc = vn('ao_desc');
+  var aoKatz = v('ao_katz'), aoDis = v('ao_dis');
+  var sc10 = vn('sc');
+  var aoHay = (aoSenos || aoAsc || aoDesc || aoDis);
+  if (aoHay) {
+    var aoP = [];
+    if (aoSenos && sc10) {
+      var senosIdx = (aoSenos / 10) / sc10;
+      var limSenosIdx = male ? 2.1 : 2.2;
+      if (senosIdx <= limSenosIdx) aoP.push('raiz aortica en rango normal (' + aoSenos + ' mm, ' + senosIdx.toFixed(2) + ' cm/m2)');
+      else if (senosIdx <= limSenosIdx + 0.3) aoP.push('dilatacion leve de raiz aortica (' + aoSenos + ' mm, ' + senosIdx.toFixed(2) + ' cm/m2)');
+      else if (senosIdx <= limSenosIdx + 0.6) aoP.push('dilatacion moderada de raiz aortica (' + aoSenos + ' mm, ' + senosIdx.toFixed(2) + ' cm/m2)');
+      else aoP.push('dilatacion severa de raiz aortica (' + aoSenos + ' mm, ' + senosIdx.toFixed(2) + ' cm/m2)');
+    } else if (aoSenos) {
+      // Sin SC: usar absolutos H<=40mm M<=36mm (Lang 2015)
+      var limSAbs = male ? 40 : 36;
+      if (aoSenos <= limSAbs) aoP.push('raiz aortica en rango normal (' + aoSenos + ' mm)');
+      else aoP.push('raiz aortica dilatada (' + aoSenos + ' mm)');
+    }
+    if (aoAsc && sc10) {
+      var ascIdx = (aoAsc / 10) / sc10;
+      if (ascIdx <= 2.1) aoP.push('aorta ascendente en rango normal (' + aoAsc + ' mm, ' + ascIdx.toFixed(2) + ' cm/m2)');
+      else if (ascIdx <= 2.5) aoP.push('dilatacion leve de aorta ascendente (' + aoAsc + ' mm, ' + ascIdx.toFixed(2) + ' cm/m2)');
+      else if (ascIdx <= 2.8) aoP.push('dilatacion moderada de aorta ascendente (' + aoAsc + ' mm, ' + ascIdx.toFixed(2) + ' cm/m2)');
+      else aoP.push('dilatacion severa de aorta ascendente (' + aoAsc + ' mm, considerar intervencion)');
+    } else if (aoAsc) {
+      if (aoAsc <= 36) aoP.push('aorta ascendente en rango normal (' + aoAsc + ' mm)');
+      else if (aoAsc <= 45) aoP.push('dilatacion leve de aorta ascendente (' + aoAsc + ' mm)');
+      else aoP.push('dilatacion moderada-severa de aorta ascendente (' + aoAsc + ' mm)');
+    }
+    if (aoDesc && sc10) {
+      var descIdx = (aoDesc / 10) / sc10;
+      if (descIdx <= 1.8) aoP.push('aorta descendente en rango normal (' + aoDesc + ' mm, ' + descIdx.toFixed(2) + ' cm/m2)');
+      else aoP.push('dilatacion de aorta descendente (' + aoDesc + ' mm, ' + descIdx.toFixed(2) + ' cm/m2)');
+    } else if (aoDesc) {
+      if (aoDesc <= 25) aoP.push('aorta descendente en rango normal (' + aoDesc + ' mm)');
+      else aoP.push('dilatacion de aorta descendente (' + aoDesc + ' mm)');
+    }
+    if (aoDis && aoDis !== '' && aoDis.indexOf('No') < 0) aoP.push(aoDis.toLowerCase());
+    if (aoKatz && aoKatz !== '' && aoKatz !== '0') aoP.push('ateroma grado ' + aoKatz + ' (Katz)');
+    if (aoP.length) {
+      var allNorm = aoP.every(function(x){ return x.indexOf('rango normal') >= 0; });
+      var c10 = allNorm
+        ? 'Aorta toracica en rango normal para talla y sexo (ref. Goldstein et al. ASE 2015, Lang et al. ASE/EACVI 2015).'
+        : 'Aorta con ' + aoP.join('; ') + '.';
+      aset('c10', c10);
+    }
+  }
+}
+
+/* ===== REPORT ===== */
+var lastR = '';
+
+function buildReport(includePost) {
+  buildConc();
+  var anS = [], i;
+  for (i = 1; i <= 16; i++) { var sv3 = v('s'+i); if (sv3!=='1') anS.push(SN[i]+': '+SL[parseInt(sv3)]); }
+  var fd = v('fexamen') || new Date().toLocaleDateString('es-CL');
+  var feBip = v('fe_bip'), gc = v('gc_auto'), ic = v('ic_auto');
+  var sxl = v('sexo')==='M' ? 'Masculino' : v('sexo')==='F' ? 'Femenino' : '-';
+  var EQ = '====================================================';
+  var DV = '----------------------------------------------------';
+  var L = [];
+  L.push('ECOTE INTRAOPERATORIA');
+  L.push('Medico informante: Magdalena Fermandois Contreras');
+  L.push(EQ); L.push('');
+  L.push('IDENTIFICACION');
+  L.push('Paciente   : '+(v('nombre')||'-'));
+  L.push('Historia   : '+nv('hc')+' | Sexo: '+sxl+' | Edad: '+nv('edad',' anios'));
+  L.push('Peso/Talla : '+nv('peso',' kg')+' / '+nv('talla',' cm')+' | SC: '+nv('sc',' m2 (Mosteller)'));
+  L.push('FC: '+nv('fc',' lpm')+' | PA: '+nv('pa',' mmHg')+' | Ritmo: '+sv('ritmo'));
+  L.push('Ecografo: Vivid i | Sonda: 6T | Insercion: '+sv('insercion')+' | Calidad: '+sv('calidad'));
+  L.push('Fecha: '+fd+' | Dx preop: '+(v('dxpre')||'-'));
+  L.push(''); L.push(DV); L.push('CAVIDADES'); L.push('');
+  L.push('Auricula derecha: long '+nv('ad_long',' mm')+' | dilat '+sv('ad_dil')+' | CE '+sv('ad_ce')+' | trombo '+sv('ad_trombo'));
+  L.push('Auricula izquierda: long '+nv('ai_long',' mm')+' | dilat '+sv('ai_dil')+' | CE '+sv('ai_ce')+' | orejuela '+nv('ai_orej',' m/s')+' | trombo '+sv('ai_trombo'));
+  L.push('Septo interauricular: '+sv('sia'));
+  L.push('Derrame pericardico: '+sv('dpe'));
+  L.push('');
+  L.push('Ventriculo derecho');
+  L.push('  Diam basal: '+nv('vd_bas',' mm (VN<=41)')+' | medio: '+nv('vd_med',' mm (VN<=35)')+' | long: '+nv('vd_long',' mm'));
+  L.push('  Hipertrofia: '+sv('vd_hta')+' | TAPSE: '+nv('vd_tapse',' mm (VN>=17)')+' | s-prima: '+nv('vd_tdi',' cm/s (VN>=9.5)'));
+  L.push('  TSVD: '+nv('vd_tsvd',' mm'));
+  L.push('');
+  L.push('Ventriculo izquierdo - medidas');
+  L.push('  SIV: '+nv('siv',' mm')+' | PP: '+nv('pp',' mm'));
+  L.push('  DD: '+nv('dd',' mm')+' | DS: '+nv('ds',' mm')+' | FA: '+nv('fa_vi')+' | FE Teich (orientativo): '+nv('fe_teich'));
+  L.push('');
+  L.push('Funcion sistolica VI - Simpson biplano (ASE/EACVI 2015)');
+  L.push('  VFD 4C: '+nv('vfd4',' ml')+' | VFS 4C: '+nv('vfs4',' ml')+' | FE 4C: '+nv('fe4'));
+  L.push('  VFD 2C: '+nv('vfd2',' ml')+' | VFS 2C: '+nv('vfs2',' ml')+' | FE 2C: '+nv('fe2'));
+  L.push('  FE biplano: '+(feBip||'-')+(feBip?' (VN: H>=52% F>=54%)':''));
+  L.push('');
+  L.push('Gasto cardiaco (Doppler TSVI): GC '+(gc||'-')+(gc?' l/min':'')+(ic?' | IC '+ic+' l/min/m2':''));
+  L.push('');
+  L.push('Aorta (Goldstein ASE 2015, Lang ASE/EACVI 2015)');
+  L.push('  TSVI: '+nv('ao_tsvi',' mm')+' | Anillo: '+nv('ao_anillo',' mm')+' | Senos Valsalva: '+nv('ao_senos',' mm')+' | UST: '+nv('ao_ust',' mm'));
+  L.push('  Ao ascendente: '+nv('ao_asc',' mm')+' | Ao descendente: '+nv('ao_desc',' mm')+' | Ateroma Katz: '+sv('ao_katz')+' | Diseccion: '+sv('ao_dis'));
+  L.push('');
+  L.push('Motilidad segmentaria VI (16 seg. ASE 2015)');
+  L.push('  WMSI: '+(v('wmsi')||'-')+' | Puntaje: '+(v('prs')||'-'));
+  L.push('  '+(anS.length?'Alterados: '+anS.join(' | '):'Sin alteraciones segmentarias'));
+  if (v('comt_mot')) L.push('  '+v('comt_mot'));
+  L.push(''); L.push(DV); L.push('ESTUDIO VALVULAR'); L.push('');
+  L.push('Valvula mitral');
+  L.push('  Morf: '+(v('vm_morf')||'-')+' | Mov: '+(v('vm_mov')||'-'));
+  L.push('  Estenosis: '+sv('vm_est')+' | Regurg: '+sv('vm_reg')+' | A1P1: '+sv('vm_a1p1')+' | A2P2: '+sv('vm_a2p2')+' | A3P3: '+sv('vm_a3p3'));
+  L.push('  E: '+nv('vm_e',' m/s')+' | A: '+nv('vm_a',' m/s')+' | E/A: '+nv('vm_ea')+' | Tdesacel: '+nv('vm_tdes',' ms'));
+  L.push('  Gmed: '+nv('vm_gmed',' mmHg')+' | THP: '+nv('vm_thp',' ms')+' | Area: '+nv('vm_area',' cm2')+' | VC: '+nv('vm_vc',' mm'));
+  L.push('');
+  L.push('Valvula aortica');
+  L.push('  Morf: '+(v('va_morf')||'-')+' | Mov: '+(v('va_mov')||'-'));
+  L.push('  Estenosis: '+sv('va_est')+' | Regurg: '+sv('va_reg'));
+  L.push('  Vmax: '+nv('va_vmax',' m/s')+' | Gmax: '+nv('va_gmax',' mmHg')+' | Gmed: '+nv('va_gmed',' mmHg')+' | ITV: '+nv('va_itv')+' | Area: '+nv('va_area',' cm2')+' | VC: '+nv('va_vc',' mm'));
+  L.push('  TSVI Vmax: '+nv('tsvi_vmax',' m/s')+' | TSVI ITV: '+nv('tsvi_itv',' cm')+' | Jet/TSVI: '+nv('va_jet','%'));
+  L.push('');
+  L.push('Valvula tricuspide');
+  L.push('  Morf: '+(v('vt_morf')||'-'));
+  L.push('  Estenosis: '+sv('vt_est')+' | Regurg: '+sv('vt_reg')+' | Vmax IT: '+nv('vt_vmax',' m/s')+' | Gmax IT: '+nv('vt_gmax',' mmHg')+' | PAP: '+nv('vt_pap',' mmHg'));
+  L.push('');
+  L.push('Valvula pulmonar');
+  L.push('  Estenosis: '+sv('vp_est')+' | Regurg: '+sv('vp_reg')+' | Vmax: '+nv('vp_vmax',' m/s'));
+  L.push('');
+  L.push('Doppler tisular');
+  L.push('  e-prima: '+nv('dt_eprime',' cm/s')+' | E/e-prima: '+nv('dt_ee')+' | PCP estimada: '+nv('dt_pcp',' mmHg'));
+  L.push('  s-prima: '+nv('dt_sprime',' cm/s')+' | S/D vena pulmonar: '+nv('dt_sd'));
+  L.push(''); L.push(DV); L.push('CONCLUSIONES'); L.push('');
+  L.push('1) VI: '+(v('c1')||'-'));
+  L.push('2) Diastolica: '+(v('c2')||'-'));
+  L.push('3) VD: '+(v('c3')||'-'));
+  L.push('4) V.Mitral: '+(v('c4')||'-'));
+  L.push('5) V.Aortica: '+(v('c5')||'-'));
+  L.push('6) V.Pulmonar: '+(v('c6')||'-'));
+  L.push('7) V.Tricuspide: '+(v('c7')||'-'));
+  L.push('8) Pericardio: '+(v('c8')||'-'));
+  if (v('c9')) L.push('9) Septo interauricular: '+v('c9'));
+  if (v('c10')) L.push('10) Aorta: '+v('c10'));
+
+  if (includePost) {
+  L.push(''); L.push(DV);
+  L.push('INTERVENCION QUIRURGICA');
+  L.push(v('interv')||'-'); L.push('');
+  L.push('POSTINTERVENCION');
+  L.push('  VI: '+(v('post_vi')||'-')+' | VD: '+(v('post_vd')||'-'));
+  L.push('  Nativa: '+(v('post_nat')||'-')+' | Protesica: '+(v('post_prot')||'-'));
+  L.push('  Fuga periprotesica: '+sv('post_fuga'));
+  if (v('comt_post')) L.push('  '+v('comt_post'));
+  L.push('');
+  L.push('Conclusion postintervencion: '+(v('concl_post')||'-'));
+  L.push(''); L.push(EQ);
+
+  }
+  // Add header indicating report type
+  L.unshift('');
+  L.unshift(includePost ? 'REPORTE COMPLETO (PRE + POSTINTERVENCION)' : 'REPORTE PREINTERVENCION');
+  lastR = L.join('\n');
+  var out = g('rout');
+  out.textContent = lastR;
+  out.style.display = 'block';
+  g('bcopy').style.display = 'block';
+  g('bpdf').style.display  = 'block';
+  out.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function genPre()  { buildReport(false); }
+function genFull() { buildReport(true);  }
+
+
+function copyR() {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(lastR).then(function() {
+      g('bcopy').textContent = 'Copiado!';
+      setTimeout(function() { g('bcopy').textContent = 'Copiar texto'; }, 2000);
+    });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = lastR; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    g('bcopy').textContent = 'Copiado!';
+    setTimeout(function() { g('bcopy').textContent = 'Copiar texto'; }, 2000);
+  }
+}
+
+function expPDF() {
+  if (!lastR) { alert('Primero genera el reporte.'); return; }
+  var doc = new window.jspdf.jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+  var pw = doc.internal.pageSize.getWidth(), ph = doc.internal.pageSize.getHeight();
+  var mg = 18, uw = pw-mg*2, y = mg;
+  function wm() { doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(185,185,185); doc.text('Fermandois',12,ph-8); }
+  var lines = lastR.split('\n'), j, wl;
+  for (var i = 0; i < lines.length; i++) {
+    var ln = lines[i];
+    if (y > ph-mg-6) { wm(); doc.addPage(); y=mg; }
+    if (ln.indexOf('ECOTE')===0) { doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(20,20,20); doc.text(ln,mg,y); y+=6; }
+    else if (ln.indexOf('Medico informante')===0) { doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(80,80,80); doc.text(ln,mg,y); y+=5; }
+    else if (/^={4}/.test(ln)) { doc.setDrawColor(60,60,60); doc.setLineWidth(.5); doc.line(mg,y,pw-mg,y); y+=4; }
+    else if (/^-{4}/.test(ln)) { doc.setDrawColor(180,180,180); doc.setLineWidth(.2); doc.line(mg,y,pw-mg,y); y+=4; }
+    else if (/^[A-Z]{2}/.test(ln) && ln===ln.toUpperCase() && ln.trim().length>3 && ln.indexOf(':')<0) { doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(30,30,30); doc.text(ln,mg,y); y+=5; }
+    else if (/^[1-8]\)/.test(ln)) { doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(30,30,30); wl=doc.splitTextToSize(ln,uw); for(j=0;j<wl.length;j++){if(y>ph-mg-6){wm();doc.addPage();y=mg;}doc.text(wl[j],mg,y);y+=4.5;} }
+    else if (ln.trim()==='') { y+=2; }
+    else if (ln.charAt(0)===' ') { doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(60,60,60); wl=doc.splitTextToSize(ln.trim(),uw-4); for(j=0;j<wl.length;j++){if(y>ph-mg-6){wm();doc.addPage();y=mg;}doc.text(wl[j],mg+4,y);y+=4;} }
+    else { doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(40,40,40); wl=doc.splitTextToSize(ln,uw); for(j=0;j<wl.length;j++){if(y>ph-mg-6){wm();doc.addPage();y=mg;}doc.text(wl[j],mg,y);y+=4.5;} }
+  }
+  wm();
+  var nm = 'ETE_'+(v('nombre')||'reporte').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'')+'_'+(v('fexamen')||new Date().toISOString().slice(0,10))+'.pdf';
+  doc.save(nm);
+}
+
+/* ===== INIT ===== */
+calcPRS();
+(function() {
+  var t = new Date(), d = t.getDate(), m = t.getMonth()+1, y2 = t.getFullYear();
+  set('fexamen', y2+'-'+(m<10?'0':'')+m+'-'+(d<10?'0':'')+d);
+})();
+</script>
+</body>
+</html>
